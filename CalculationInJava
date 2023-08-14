@@ -1,0 +1,352 @@
+class Main {
+
+  public static void splitCalculator4MileToMeter(int hour, int min, int sec, double miles, double splits)
+  {
+    //math
+    //if user inputs total time
+    int totalMin = (60*hour) + min;
+    int totalSec = (totalMin * 60) + sec;
+    //if user inputs pace
+    /*
+      double totalTime = (60*min) + sec;
+      totalTime *= miles;
+      totalSec = totaltime;
+    */
+    
+    double totalMeters = (miles * 1609.344);
+    double totalSplits = totalMeters/ splits;
+    double splitTimeHelp = totalSec/totalSplits;
+    int minuteSplit = (int)splitTimeHelp/60;
+    double secondLeftOver = splitTimeHelp - (minuteSplit * 60);
+    double originalMinute = minuteSplit;
+    double originalSec = secondLeftOver;
+    int hourMark = 0;
+    double originalSplit = splits;
+    //print out
+    for(int i = 0; i < totalSplits-1; i++)
+      {
+        //prints out specifically if minutes are less than 60 
+        if(minuteSplit <60)
+        {
+          //if it has been over an hour
+          if(hourMark > 0)
+          {
+            System.out.println(splits + "m -> " + hourMark + ":" + minuteSplit+ ":" + String.format("%.2f",secondLeftOver));
+          }
+        //if it has not been an hour yet
+          else{
+            
+          System.out.println(splits + "m -> " + minuteSplit+ ":" +   String.format("%.2f",secondLeftOver));
+          }
+        
+           splits += originalSplit;
+          minuteSplit += originalMinute;
+          secondLeftOver += originalSec;
+        //if there needs to be another minute added
+          if(secondLeftOver > 59)
+          {
+            double tempMin = minuteSplit *60;
+            double tempSec = secondLeftOver + tempMin;
+            minuteSplit = (int)tempSec/60;
+            secondLeftOver = tempSec - (minuteSplit * 60);
+          }
+        } 
+        //if it passes 59 minutes
+        else if(minuteSplit >59)
+        {
+          hourMark += 1;
+          minuteSplit = minuteSplit - 60;
+            System.out.println(splits + "m -> " + hourMark + ":" + minuteSplit+ ":" +  String.format("%.2f",secondLeftOver));
+           splits += originalSplit;
+          minuteSplit += originalMinute;
+          secondLeftOver += originalSec;
+        //if there needs to be another minute added
+          if(secondLeftOver > 59)
+          {
+            double tempMin = minuteSplit *60;
+            double tempSec = secondLeftOver + tempMin;
+            minuteSplit = (int)tempSec/60;
+            secondLeftOver = tempSec - (minuteSplit * 60);
+          }
+        }
+         
+        
+      }
+    //meters leftover
+    splits = totalMeters;
+    if(hour > 0)
+    {
+    System.out.println(String.format("%.2f",splits) + "m -> " + hour + ":" + min+ ":" + sec);
+    }
+    else
+    {
+      System.out.println(String.format("%.2f",splits) + "m -> " + min+ ":" + sec);
+    }
+  }
+
+  
+  public static void splitCalculator4MeterToMile(int hour, int min, int sec, double meters, double splits)
+  {
+     //math
+    int totalMin = (60*hour) + min;
+    int totalSec = (totalMin * 60) + sec;
+    double totalMiles = (meters / 1609.344);
+    double totalSplits = totalMiles/ splits;
+    double splitTimeHelp = totalSec/totalSplits;
+    int minuteSplit = (int)splitTimeHelp/60;
+    double secondLeftOver = splitTimeHelp - (minuteSplit * 60);
+    double originalMinute = minuteSplit;
+    double originalSec = secondLeftOver;
+    int hourMark = 0;
+    double originalSplit = splits;
+    //print out
+    for(int i = 0; i < totalSplits-1; i++)
+      {
+        //prints out specifically if minutes are less than 60 
+        if(minuteSplit <60)
+        {
+          //if it has been over an hour
+          if(hourMark > 0)
+          {
+            System.out.println(splits + "mi -> " + hourMark + ":" + minuteSplit+ ":" + String.format("%.2f",secondLeftOver));
+          }
+        //if it has not been an hour yet
+          else{
+            
+          System.out.println(splits + "mi -> " + minuteSplit+ ":" +   String.format("%.2f",secondLeftOver));
+          }
+        
+           splits += originalSplit;
+          minuteSplit += originalMinute;
+          secondLeftOver += originalSec;
+        //if there needs to be another minute added
+          if(secondLeftOver > 59)
+          {
+            double tempMin = minuteSplit *60;
+            double tempSec = secondLeftOver + tempMin;
+            minuteSplit = (int)tempSec/60;
+            secondLeftOver = tempSec - (minuteSplit * 60);
+          }
+        } 
+        //if it passes 59 minutes
+        else if(minuteSplit >59)
+        {
+          hourMark += 1;
+          minuteSplit = minuteSplit - 60;
+            System.out.println(splits + "mi -> " + hourMark + ":" + minuteSplit+ ":" +  String.format("%.2f",secondLeftOver));
+           splits += originalSplit;
+          minuteSplit += originalMinute;
+          secondLeftOver += originalSec;
+        //if there needs to be another minute added
+          if(secondLeftOver > 59)
+          {
+            double tempMin = minuteSplit *60;
+            double tempSec = secondLeftOver + tempMin;
+            minuteSplit = (int)tempSec/60;
+            secondLeftOver = tempSec - (minuteSplit * 60);
+          }
+        }
+         
+        
+      }
+    //meters leftover
+    splits = totalMiles;
+    if(hour > 0)
+    {
+    System.out.println(String.format("%.2f",splits) + "mi -> " + hour + ":" + min+ ":" + sec);
+    }
+    else
+    {
+      System.out.println(String.format("%.2f",splits) + "mi -> " + min+ ":" + sec);
+    }
+  }
+
+  
+  public static void splitCalculator4MeterToMeter(int hour, int min, int sec, double meters, double splits)
+  {
+     //math
+    int totalMin = (60*hour) + min;
+    int totalSec = (totalMin * 60) + sec;
+    double totalSplits = meters/ splits;
+    double splitTimeHelp = totalSec/totalSplits;
+    int minuteSplit = (int)splitTimeHelp/60;
+    double secondLeftOver = splitTimeHelp - (minuteSplit * 60);
+    double originalMinute = minuteSplit;
+    double originalSec = secondLeftOver;
+    int hourMark = 0;
+    double originalSplit = splits;
+
+    //print out
+    for(int i = 0; i < totalSplits-1; i++)
+      {
+        //prints out specifically if minutes are less than 60 
+        if(minuteSplit <60)
+        {
+          //if it has been over an hour
+          if(hourMark > 0)
+          {
+            System.out.println(splits + "m -> " + hourMark + ":" + minuteSplit+ ":" + String.format("%.2f",secondLeftOver));
+          }
+        //if it has not been an hour yet
+          else{
+            
+          System.out.println(splits + "m -> " + minuteSplit+ ":" +   String.format("%.2f",secondLeftOver));
+          }
+        
+           splits += originalSplit;
+          minuteSplit += originalMinute;
+          secondLeftOver += originalSec;
+        //if there needs to be another minute added
+          if(secondLeftOver > 59)
+          {
+            double tempMin = minuteSplit *60;
+            double tempSec = secondLeftOver + tempMin;
+            minuteSplit = (int)tempSec/60;
+            secondLeftOver = tempSec - (minuteSplit * 60);
+          }
+        }
+        //if it passes 59 minutes
+        else if(minuteSplit >59)
+        {
+          hourMark += 1;
+          minuteSplit = minuteSplit - 60;
+            System.out.println(splits + "m -> " + hourMark + ":" + minuteSplit+ ":" +  String.format("%.2f",secondLeftOver));
+           splits += originalSplit;
+          minuteSplit += originalMinute;
+          secondLeftOver += originalSec;
+        //if there needs to be another minute added
+          if(secondLeftOver > 59)
+          {
+            double tempMin = minuteSplit *60;
+            double tempSec = secondLeftOver + tempMin;
+            minuteSplit = (int)tempSec/60;
+            secondLeftOver = tempSec - (minuteSplit * 60);
+          }
+        }
+         
+        
+      }
+    //meters leftover
+    splits = meters;
+    if(hour > 0)
+    {
+    System.out.println(String.format("%.2f",splits) + "m -> " + hour + ":" + min+ ":" + sec);
+    }
+    else
+    {
+      System.out.println(String.format("%.2f",splits) + "m -> " + min+ ":" + sec);
+    }
+    
+  }
+  public static void splitCalculator4MilesToMiles(int hour, int min, int sec, double miles, double splits)
+  {
+     //math
+    int totalMin = (60*hour) + min;
+    int totalSec = (totalMin * 60) + sec;
+    double totalSplits = miles/ splits;
+    double splitTimeHelp = totalSec/totalSplits;
+    int minuteSplit = (int)splitTimeHelp/60;
+    double secondLeftOver = splitTimeHelp - (minuteSplit * 60);
+    double originalMinute = minuteSplit;
+    double originalSec = secondLeftOver;
+    int hourMark = 0;
+    double originalSplit = splits;
+
+    //print out
+    for(int i = 0; i < totalSplits-1; i++)
+      {
+        //prints out specifically if minutes are less than 60 
+        if(minuteSplit <60)
+        {
+          //if it has been over an hour
+          if(hourMark > 0)
+          {
+            System.out.println(splits + "mi -> " + hourMark + ":" + minuteSplit+ ":" + String.format("%.2f",secondLeftOver));
+          }
+        //if it has not been an hour yet
+          else{
+            
+          System.out.println(splits + "mi -> " + minuteSplit+ ":" +   String.format("%.2f",secondLeftOver));
+          }
+        
+           splits += originalSplit;
+          minuteSplit += originalMinute;
+          secondLeftOver += originalSec;
+        //if there needs to be another minute added
+          if(secondLeftOver > 59)
+          {
+            double tempMin = minuteSplit *60;
+            double tempSec = secondLeftOver + tempMin;
+            minuteSplit = (int)tempSec/60;
+            secondLeftOver = tempSec - (minuteSplit * 60);
+          }
+        }
+        //if it passes 59 minutes
+        else if(minuteSplit >59)
+        {
+          hourMark += 1;
+          minuteSplit = minuteSplit - 60;
+            System.out.println(splits + "mi -> " + hourMark + ":" + minuteSplit+ ":" +  String.format("%.2f",secondLeftOver));
+           splits += originalSplit;
+          minuteSplit += originalMinute;
+          secondLeftOver += originalSec;
+        //if there needs to be another minute added
+          if(secondLeftOver > 59)
+          {
+            double tempMin = minuteSplit *60;
+            double tempSec = secondLeftOver + tempMin;
+            minuteSplit = (int)tempSec/60;
+            secondLeftOver = tempSec - (minuteSplit * 60);
+          }
+        }
+         
+        
+      }
+    //meters leftover
+    splits = miles;
+    if(hour > 0)
+    {
+    System.out.println(String.format("%.2f",splits) + "mi -> " + hour + ":" + min+ ":" + sec);
+    }
+    else
+    {
+      System.out.println(String.format("%.2f",splits) + "mi -> " + min+ ":" + sec);
+    }
+    
+  }
+  public static void main(String[] args) 
+  {
+    //first function
+    int hour = 1;
+    int min= 30;
+    int sec = 22;
+    double miles = 10;
+    double splits = 500;
+    //second function
+    int hourm = 0;
+    int minm = 20;
+    int secm = 27;
+    double meters = 4900;
+    double meterSplit = 1;
+
+    //thirdfunction
+    int hourmm = 0;
+    int minmm = 14;
+    int secmm = 7;
+    double metermm = 2500;
+    double splitsmm = 500;
+
+    //fourthfunction
+    int hourmi = 1;
+    int minmi = 20;
+    int secmi = 23;
+    double milesmi= 10;
+    double splitsmi = 2;
+    //splitCalculator4MileToMeter(hour, min, sec, miles, splits);
+    //splitCalculator4MeterToMile(hourm, minm, secm, meters, meterSplit);
+    //splitCalculator4MeterToMeter(hourmm, minmm, secmm, metermm,  splitsmm);
+    splitCalculator4MilesToMiles(hourmi, minmi, secmi, milesmi, splitsmi);
+      
+  
+  }
+}
