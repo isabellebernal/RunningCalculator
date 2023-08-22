@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DashJourney</title>
+  <h1 style = "padding-left: 50px"> DashJourney: vo2max and splits calculator </h1>
+  <style> /*CSS stuff*/
+  body {
+    font-family: monospace; /*Font*/
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    width: 900px;
+    margin: 50px auto;
+    display: flex;
+  }
+
+  .calculator-box { /* splits calculator box */
+    flex: 1;
+    margin-right: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+  }
+
+  .vo2max-box {
+    flex: 1; /* VO2 max BOX not button */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+  }
+
+  .button {
+    background-color: #5c86f9; /* Button for splits calculator and vo2max */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .button:hover {
+    background-color: #909090; /* Color in hex when you hover over the button */
+  }
+
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #5c86f9;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+  }
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+
+  .result-box {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+    width: 100%;
+    max-width: 420px;
+    box-size: border-box;
+  }
+
+
+  </style>
+
+</head>
+<body>
+<div class="container">
+  <div class="calculator-box">
+    <!-- HTML stars here-->
+    <h1>Splits Calculator</h1>
+    <hr>
+    <p>Total distance: <!--comment here -->
+      <input type="number" id="num1" placeholder="Enter Distance">
+      <select name = "number" id = num>
+        <option value = "miles"> miles </option>
+        <option value = "meters"> meters </option>
+      </select>
+    </p>
+    <hr>
+    <p> Total time:
+      <input type="digit" id="tthh" style="width: 20px;" placeholder="hh">
+      <input type = "numbermin" id = "ttmm" style="width: 22px;" placeholder = "mm">
+      <input type = "numbermin" id = "ttss" style="width: 20px;" placeholder = "ss">
+
+    </p>
+    <p>
+      or
+    </p>
+    <p> Pace:
+      <input type="numberrr" id="pmm" style="width: 22px;" placeholder="mm">
+      <input type="numberrr" id="pss" style="width: 22px;" placeholder="ss">
+      min/mile
+    </p>
+    <hr>
+    <p> Splits every:
+      <input type="numberr" id="num2" placeholder="Enter splits per __">
+      <select name = "numberr" id = numm>
+        <option value = "mile"> mile </option>
+        <option value = "meter"> meter </option>
+      </select>
+    </p>
+    <hr>
+
+    <button class="button" id = "stop" onclick="calculate()">Calculate</button>
+    <button onclick="refreshPage()">refresh</button>
+
+    <p id="result">
+    </p>
+
+
+
+
+  </div>
+
+  <div class="vo2max-box">
+    <h1>VO2 Max Calculator</h1>
+    <!-- Add the necessary input fields and button for VO2 Max calculation -->
+    <p>Enter your VO2 Max data here:</p>
+    <input type="number" id="age" placeholder="Enter your age">
+    <input type="number" id="restingHR" placeholder="Enter your resting heart rate">
+    <!-- Add any other necessary input fields for VO2 Max calculation -->
+    <button class="button" onclick="calculateVO2Max()">Calculate VO2 Max</button>
+    <div class="tooltip">
+      What is a VO2 Max?
+      <span class="tooltiptext">VO2 max measures your aerobic fitness
+        levels by telling you how well your body is using oxygen. In other words, this helps assess
+      your fitness level and measures your </span>
+    </div>
+
+    <p id="vo2max-result"></p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="result-box" style="display: none;">
+    <h2>Calculation Result:</h2>
+    <h3 style = "font-size: 20px;"><span>
+      Total Distance:
+    </span>
+      <span style = "padding-left: 65px;">
+      Total Time:
+    </span>
+    </h3>
+
+    <p id="split-result" style = "font-size: 15px;"> </p>
+
+
+
+
+
+  </div>
+</div>
+
+
+<script>
+  //javascript starts here
+  function refreshPage()
+  {
+    location.reload();
+  }
+  function calculate()
+  {
+    document.querySelector(".result-box").style.display = "block";
+    //initialization of variables needed
+    const distance = document.getElementById("num1").value;
+    let hourtt = document.getElementById("tthh").value;
+    let mintt = document.getElementById("ttmm").value;
+    let sectt = document.getElementById("ttss").value;
+    const minp = document.getElementById("pmm").value;
+    const secp = document.getElementById("pss").value;
+    let splits = document.getElementById("num2").value;
+    let newdistMiles = distance;
+    let totalSec = 0;
+    let min = 0;
+    let sec = 0
+    let hour = 0;
+    let totalTime = 0;
+    // end of initialization
+
+    //user option drop down selection
+    //have to figure out unit for distance so can convert to total time when given pace time
+    let unit = document.querySelector('#num');
+    let runit = unit.value;
+    //figuring out splits unit
+    let unitSplit = document.querySelector('#numm');
+    let runSplit = unitSplit.value;
+    //end of selection value finding
+
+    // start of what can go wrong
+    if((hourtt == '' || null || 0) && (mintt == '' || null || 0)&&(sectt == '' || null || 0) &&
+            (minp == '' || null || 0)&&(secp == '' || null || 0))
+    {
+      // print out that I can't calculate because there is neither pace time or total time
+      window.alert("I can't calculate because there is neither pace time or total time");
+      location.reload();
+    }
+    else if(distance == '' || null|| 0)
+    {
+      //print out that I can't calculate because there is no distance
+      window.alert("I can't calculate because there is no distance");
+      location.reload();
+    }
+    else if(splits == '' ||null || 0)
+    {
+      window.alert("I can't calculate because there is no splits");
+      location.reload();
+      //print out that I can't calculate because there is no splits
+    }
+    else if(((hourtt != '' || null || 0) || (mintt != '' || null || 0)||(sectt != '' || null || 0))
+            &&((minp != '' || null || 0)||(secp != '' || null || 0)))
+    {
+      window.alert("you cannot have both pace time and total time");
+      location.reload();
+      //you cannot have both pace time and total time
+    }
+    // end of what can go wrong
+    else if(((mintt == '' || null )||(sectt == '' || null)) && ((minp == '' || null )||(secp == '' || null)))
+    {
+      window.alert("you need to put 0s in if there was 0 minutes or 0 seconds in the time");
+      location.reload();
+    }
+    // pace option
+    else if((hourtt == '' || null || 0) && (mintt == '' || null || 0)&&(sectt == '' || null || 0))
+    {
+
+      if(runit == "meters")
+      {
+        newdistMiles = distance/1609.34;
+      }
+      else
+      {
+        newdistMiles = distance;
+      }
+      totalTime = (60 * minp);
+      totalTime = totalTime + parseInt(secp);
+      totalTime = newdistMiles * totalTime;
+      totalSec = totalTime;
+      hour = Math.trunc(totalSec / 3600);
+      min = Math.trunc((totalSec/60)) - (hour * 60)
+      sec = totalSec - (min*60) - (hour * 60*60);
+
+    }
+
+    // total time option
+    else if ((minp == '' || null || 0)&&(secp == '' || null || 0))
+    {
+      let totalMinH = (60*hourtt);
+      let totalMin = totalMinH + parseInt(mintt);
+      totalSec = (totalMin * 60) + parseInt(sectt);
+      hour = hourtt;
+      min = mintt;
+      sec = sectt;
+    }
+    else
+    {
+      // redo
+      window.alert("you did something wrong");
+      location.reload();
+    }
+    // start of splitCalculator4MileToMeter
+    if((runit == 'miles')&&(runSplit == 'meter')) {
+      let totalMeters = (newdistMiles* 1609.344);
+      let totalSplits = totalMeters / splits;
+      let splitTimeHelp = totalSec / totalSplits;
+      calculateHelper(splits, totalMeters, totalSplits, splitTimeHelp, runSplit);
+      //meters leftover
+      splits = totalMeters;
+      sec = sec.toFixed(2);
+      if (hour > 0) {
+        splits = splits.toFixed(2);
+        if((min < 10)&&(sec < 10))
+        {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":0" + min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+        else if(min < 10)
+        {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":0" + min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+        else if(sec < 10) {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":" + min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        } else {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":" + min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+      }
+      else {
+        splits = splits.toFixed(2);
+        if (sec < 10) {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        } else {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += min + ":" + sec;
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+      }
+    }
+    // End of splitCalculator4MileToMeter
+
+    //start of splitCalculator4MeterToMile
+    if((runit == 'meters')&&(runSplit == 'mile'))
+    {
+      let totalMeters = (newdistMiles*1);
+      let totalSplits = totalMeters/ splits;
+      let splitTimeHelp = totalSec/totalSplits;
+      calculateHelper(splits, totalMeters, totalSplits, splitTimeHelp, runSplit);
+
+      //meters leftover
+      splits = totalMeters;
+      sec = sec.toFixed(2);
+      if (hour > 0) {
+        splits = splits.toFixed(2);
+        if((min < 10)&&(sec < 10))
+        {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":0" + min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+        else if(min < 10)
+        {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":0" + min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+        else if(sec < 10) {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":" + min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        } else {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":" + min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+      }
+      else {
+        splits = splits.toFixed(2);
+        if (sec < 10) {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        } else {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+      }
+    }
+            // end of splitCalculator4MeterToMile
+
+    //start of splitCalculator4MilestoMiles
+    else if((runit == 'miles')&&(runSplit == 'mile'))
+    {
+      let totalMeters = distance;
+      let totalSplits = totalMeters/ splits;
+      let splitTimeHelp = totalSec/totalSplits;
+      calculateHelper(splits, totalMeters, totalSplits, splitTimeHelp, runSplit);
+
+      //meters leftover
+
+      splits = totalMeters;
+      if(hour > 0)
+      {
+        splits = parseInt(splits);
+        splits = splits.toFixed(2);
+        sec = sec.toFixed(2);
+        if((min < 10)&&(sec < 10))
+        {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":0" + min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+        else if(min < 10)
+        {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":0" + min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+        else if(sec < 10) {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":" + min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        } else {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":" + min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+      }
+      else
+      {
+        splits = parseInt(splits);
+        splits = splits.toFixed(2);
+        sec = sec.toFixed(2);
+        if (sec < 10) {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        } else {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "mi";
+          document.getElementById("split-result").innerHTML += min + ":" + sec;
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+      }
+    }
+            //end of splitCalculator4MilesToMiles
+    //start of splitCalculator4MeterToMeter
+    else if((runit == 'meters')&&(runSplit == 'meter')) {
+      let totalMeters = distance;
+      totalMeters = parseInt(totalMeters);
+      let totalSplits = totalMeters/ splits;
+
+      let splitTimeHelp = totalSec / totalSplits;
+
+      calculateHelper(splits, totalMeters, totalSplits, splitTimeHelp, runSplit);
+      //meters leftover
+      splits = totalMeters;
+      if(hour > 0)
+      {
+        splits = parseInt(splits);
+        splits = splits.toFixed(2);
+        sec = sec.toFixed(2);
+        if((min < 10)&&(sec < 10))
+        {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":0" + min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+        else if(min < 10)
+        {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":0" + min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+        else if(sec < 10) {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":" + min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        } else {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += hour + ":" + min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+      }
+      else
+      {
+        sec = sec.toFixed(2);
+        splits = splits.toFixed(2);
+        if (sec < 10) {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += min + ":0" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        } else {
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += splits + "me";
+          document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += min + ":" + sec;
+          document.getElementById("split-result").innerHTML += "<br>";
+        }
+      }
+    } //emd of splitCalculator4MetertoMeter
+    document.getElementById("split-result").innerHTML += "<hr>";
+    document.getElementById("stop").onclick = null;
+  }
+
+  function calculateHelper(splits, totalMeters, totalSplits, splitTimeHelp, runSplit) {
+    let secondsSplitHelp = splitTimeHelp;
+    let minuteSplit = Math.trunc(splitTimeHelp / 60)
+    let secondLeftOver = secondsSplitHelp - (minuteSplit * 60);
+    let originalMinute = minuteSplit;
+    let originalSec = secondLeftOver;
+    let hourMark = 0;
+    let originalSplit = parseInt(splits);
+    let x = document.getElementById("split-result");
+    //print out
+    for (let i = 0; i < totalSplits - 1; i++) {
+      splits = parseInt(splits);
+      splits = splits.toFixed(2);
+      //prints out specifically if minutes are less than 60
+      if (minuteSplit < 60) {
+        //if it has been over an hour
+        if (hourMark > 0) {
+          let secondLeftOverFormat = secondLeftOver.toFixed(2);
+          if (runSplit == "meter") {
+            x.innerHTML += '\xa0\xa0\xa0\xa0';
+            if ((minuteSplit < 10) && (secondLeftOverFormat < 10)) {
+              x.innerHTML += splits + "me";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += hourMark + ":0" + minuteSplit + ":0" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            } else if (minuteSplit < 10) {
+              x.innerHTML += splits + "me";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += hourMark + ":0" + minuteSplit + ":" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            } else if (secondLeftOverFormat < 10) {
+              x.innerHTML += splits + "me";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += hourMark + ":" + minuteSplit + ":0" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            } else {
+              x.innerHTML += splits + "me";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += hourMark + ":" + minuteSplit + ":" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            }
+          } else {
+            x.innerHTML += '\xa0\xa0\xa0\xa0';
+            if ((minuteSplit < 10) && (secondLeftOverFormat < 10)) {
+              x.innerHTML += splits + "mi";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += hourMark + ":0" + minuteSplit + ":0" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            } else if (minuteSplit < 10) {
+              x.innerHTML += splits + "mi";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += hourMark + ":0" + minuteSplit + ":" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            } else if (secondLeftOverFormat < 10) {
+              x.innerHTML += splits + "mi";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += hourMark + ":" + minuteSplit + ":0" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            } else {
+              x.innerHTML += splits + "mi";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += hourMark + ":" + minuteSplit + ":" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            }
+          }
+
+        }
+        //if it has not been an hour yet
+        else {
+          let secondLeftOverFormat = secondLeftOver.toFixed(2);
+          if (runSplit == "meter") {
+            x.innerHTML += '\xa0\xa0\xa0\xa0';
+            if (secondLeftOverFormat < 10) {
+              x.innerHTML += splits + "me";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += minuteSplit + ":0" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            } else {
+              x.innerHTML += splits + "me";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += minuteSplit + ":" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            }
+          } else {
+            x.innerHTML += '\xa0\xa0\xa0\xa0';
+            if (secondLeftOverFormat < 10) {
+              x.innerHTML += splits + "mi";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += minuteSplit + ":0" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            } else {
+              x.innerHTML += splits + "mi";
+              x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+              x.innerHTML += minuteSplit + ":" + secondLeftOverFormat;
+              document.getElementById("split-result").innerHTML += "<br>";
+            }
+          }
+
+        }
+
+        splits = parseInt(splits) + originalSplit;
+        minuteSplit += originalMinute;
+        secondLeftOver += originalSec;
+        //if there needs to be another minute added
+        if (secondLeftOver > 59) {
+          let tempMin = minuteSplit * 60;
+          let tempSec = secondLeftOver + tempMin;
+          minuteSplit = Math.trunc(tempSec / 60);
+          secondLeftOver = tempSec - (minuteSplit * 60);
+        }
+      }
+      //if it passes 59 minutes
+      else if (minuteSplit > 59) {
+        hourMark += 1;
+        minuteSplit = minuteSplit - 60;
+        let secondLeftOverFormat = secondLeftOver.toFixed(2);
+        if (minuteSplit < 10 && secondLeftOverFormat < 10) {
+          x.innerHTML += '\xa0\xa0\xa0\xa0';
+          if (runSplit == "meter") {
+            x.innerHTML += splits + "me";
+            x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+            x.innerHTML += hourMark + ":0" + minuteSplit + ":0" + secondLeftOverFormat;
+            document.getElementById("split-result").innerHTML += "<br>";
+          } else {
+            x.innerHTML += splits + "mi";
+            x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+            x.innerHTML += hourMark + ":0" + minuteSplit + ":0" + secondLeftOverFormat;
+            document.getElementById("split-result").innerHTML += "<br>";
+          }
+        } else if (minuteSplit < 10) {
+          x.innerHTML += '\xa0\xa0\xa0\xa0';
+          if (runSplit == "meter") {
+            x.innerHTML += splits + "me";
+            x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+            x.innerHTML += hourMark + ":0" + minuteSplit + ":" + secondLeftOverFormat;
+            document.getElementById("split-result").innerHTML += "<br>";
+          } else {
+            x.innerHTML += splits + "mi";
+            x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+            x.innerHTML += hourMark + ":0" + minuteSplit + ":" + secondLeftOverFormat;
+            document.getElementById("split-result").innerHTML += "<br>";
+          }
+        } else if (secondLeftOverFormat < 10) {
+          x.innerHTML += '\xa0\xa0\xa0\xa0';
+          if (runSplit == "meter") {
+            x.innerHTML += splits + "me";
+            x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+            x.innerHTML += hourMark + ":" + minuteSplit + ":0" + secondLeftOverFormat;
+            document.getElementById("split-result").innerHTML += "<br>";
+          } else {
+            x.innerHTML += splits + "mi";
+            x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+            x.innerHTML += hourMark + ":" + minuteSplit + ":0" + secondLeftOverFormat;
+            document.getElementById("split-result").innerHTML += "<br>";
+          }
+        } else {
+          x.innerHTML += '\xa0\xa0\xa0\xa0';
+          if (runSplit == "meter") {
+            x.innerHTML += splits + "me";
+            x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+            x.innerHTML += hourMark + ":" + minuteSplit + ":" + secondLeftOverFormat;
+            document.getElementById("split-result").innerHTML += "<br>";
+          } else {
+            x.innerHTML += splits + "mi";
+            x.innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+            x.innerHTML += hourMark + ":" + minuteSplit + ":" + secondLeftOverFormat;
+            document.getElementById("split-result").innerHTML += "<br>";
+          }
+        }
+        splits = splits + originalSplit;
+        minuteSplit = minuteSplit + originalMinute;
+        secondLeftOver = secondLeftOver + originalSec;
+        //if there needs to be another minute added
+        if (secondLeftOver > 59) {
+          let tempMin = minuteSplit * 60;
+          let tempSec = secondLeftOver + tempMin;
+          minuteSplit = Math.trunc(tempSec / 60);
+          secondLeftOver = tempSec - (minuteSplit * 60);
+        }
+
+      }
+      document.getElementById("split-result").innerHTML += "<hr>";
+    }
+
+  }
+
+  // Function for VO2 Max Calculation
+  function calculateVO2Max() {
+    //vo2max code here
+
+  }
+</script>
+</body>
+</html>
