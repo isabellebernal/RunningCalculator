@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DashJourney</title>
-  <h1 style = "padding-left: 50px"> DashJourney: vo2max and splits calculator </h1>
+  <title>SpeedRace</title>
+  <h1 style = "padding-left: 50px; font-size: 45px"> SpeedRace: Running Times Helper</h1>
   <style> /*CSS stuff*/
   body {
     font-family: monospace; /*Font*/
     margin: 0;
     padding: 0;
+    background-image: url("ruSz6v.jpg");
+    background-size: cover;
   }
 
   .container {
@@ -18,20 +20,16 @@
 
   .calculator-box { /* splits calculator box */
     flex: 1;
-    margin-right: 20px;
+    margin-right: 120px;
+    margin-left: 120px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    background-color: #f2f2f2;
+    background-color: #ffffff;
+    font-size: 15px;
+    text-align: center;
   }
 
-  .vo2max-box {
-    flex: 1; /* VO2 max BOX not button */
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f2f2f2;
-  }
 
   .button {
     background-color: #5c86f9; /* Button for splits calculator and vo2max */
@@ -42,41 +40,15 @@
     cursor: pointer;
   }
 
-  .button:hover {
-    background-color: #909090; /* Color in hex when you hover over the button */
-  }
-
-  .tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-  }
-
-  .tooltip .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: #5c86f9;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 10px 0;
-
-    /* Position the tooltip */
-    position: absolute;
-    z-index: 1;
-  }
-  .tooltip:hover .tooltiptext {
-    visibility: visible;
-  }
-
   .result-box {
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    background-color: #f2f2f2;
+    background-color: #ffffff;
     width: 100%;
-    max-width: 420px;
+    max-width: 400px;
+    margin-left: 240px;
     box-size: border-box;
   }
 
@@ -90,7 +62,8 @@
     <!-- HTML stars here-->
     <h1>Splits Calculator</h1>
     <hr>
-    <p>Total distance: <!--comment here -->
+    <p>
+      Total distance:
       <input type="number" id="num1" placeholder="Enter Distance">
       <select name = "number" id = num>
         <option value = "miles"> miles </option>
@@ -133,28 +106,12 @@
 
   </div>
 
-  <div class="vo2max-box">
-    <h1>VO2 Max Calculator</h1>
-    <!-- Add the necessary input fields and button for VO2 Max calculation -->
-    <p>Enter your VO2 Max data here:</p>
-    <input type="number" id="age" placeholder="Enter your age">
-    <input type="number" id="restingHR" placeholder="Enter your resting heart rate">
-    <!-- Add any other necessary input fields for VO2 Max calculation -->
-    <button class="button" onclick="calculateVO2Max()">Calculate VO2 Max</button>
-    <div class="tooltip">
-      What is a VO2 Max?
-      <span class="tooltiptext">VO2 max measures your aerobic fitness
-        levels by telling you how well your body is using oxygen. In other words, this helps assess
-      your fitness level and measures your </span>
-    </div>
 
-    <p id="vo2max-result"></p>
-  </div>
 </div>
 
 <div class="container">
   <div class="result-box" style="display: none;">
-    <h2>Calculation Result:</h2>
+    <h2 style = "font-size: 25px;">Calculation Result:</h2>
     <h3 style = "font-size: 20px;"><span>
       Total Distance:
     </span>
@@ -460,8 +417,8 @@
         } else {
           document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0';
           document.getElementById("split-result").innerHTML += splits + "mi";
-          document.getElementById("split-result").innerHTML += min + ":" + sec;
           document.getElementById("split-result").innerHTML += '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + "->" + '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
+          document.getElementById("split-result").innerHTML += min + ":" + sec;
           document.getElementById("split-result").innerHTML += "<br>";
         }
       }
@@ -722,11 +679,6 @@
 
   }
 
-  // Function for VO2 Max Calculation
-  function calculateVO2Max() {
-    //vo2max code here
-
-  }
 </script>
 </body>
 </html>
